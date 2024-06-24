@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+
+<h2>ORDENES DE COMPRA</h2>
+
+<form method="get">
+    <label for="">Filtro por estado</label>
+    <select name="estado" id="estado">
+        <option value="">- Todas las OC -</option>
+        {% for estado in filtro_estados %}
+            <option value="{{ estado }}" {% if estado == estado_seleccionado %}selected{% endif %}>{{ estado }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="numero">Número de Orden:</label>
+    <input type="text" name="numero" id="numero" value="{{ numero_seleccionado }}">
+
+    <button type="submit">Filtrar</button>
+</form>
+
+
+
+{% if listado %}
+    <ul>
+        {% for oc in listado %}
+
+        <div>
+            <h3>{{ oc.numero }} - {{ oc.cliente }}</h3>
+            <p>{{ oc.fecha }}</p>
+            <p>{{ oc.estado }}</p>
+        </div>     
+       
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No se encontraron resultados para los filtros aplicados.</p>
+{% endif %}
+
+
+
+
+{% endblock %}
+
+
+
