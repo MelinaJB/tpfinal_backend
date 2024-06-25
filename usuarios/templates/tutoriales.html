@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<h2>Tutoriales</h2>
+<div class="card">
+    {% for tutorial in tutoriales %}
+    <div class="card-body ">
+        <h4 class="card-title">{{ tutorial.titulo }}</h4>            
+        <p>{{ tutorial.descripcion }}</p>
+        <button class="btn btn-light"><a href="{{ tutorial.recurso_url }}" target="_blank">Más información</a></button>
+    </div>
+        
+   
+    {% endfor %}
+</div>
+
+{% endblock %}

@@ -5,15 +5,6 @@ from .forms import *
 
 
 # Create your views here.
-class Index(TemplateView):
-    template_name = 'index'
-
-    def get(self, request):
-        title = 'INDEXXXXXX'
-        return render(request, 'index.html', {
-            'title': title
-        })
-
 #MOSTRAR LISTADO OC + FILTROS
 class listadoOC(TemplateView):
     template_name = 'oc/listado_oc.html'
