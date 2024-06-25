@@ -5,6 +5,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.views.generic.edit import FormView
+from django.contrib.auth.views import LoginView
+class CustomLoginView(LoginView):
+    template_name = 'login.html'
+
 from django.contrib import messages
 from .models import *
 from .forms import *
@@ -39,3 +43,11 @@ class RegistroView(FormView):
         user.save()
         login(self.request, user)
         return super().form_valid(form)
+
+
+
+class loginView(LoginView):
+    template_name = 'login.html'
+    success_url = reverse_lazy('index')
+
+
