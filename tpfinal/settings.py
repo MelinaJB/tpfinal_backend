@@ -77,15 +77,6 @@ TEMPLATES = [
     },
 ]
 
-# Configuración para CKEditor
-
-CKEDITOR_5_CONFIGS = {
-    'default': {
-        'toolbar': 'full',
-        'height': 300,
-        'width': '100%',
-    },
-}
 
 WSGI_APPLICATION = 'tpfinal.wsgi.application'
 
