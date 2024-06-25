@@ -5,6 +5,11 @@ from .forms import *
 
 
 # Create your views here.
+class panelUsuarios(TemplateView):
+    template_name = 'panelusuarios'
+    def get(self, request):
+        return render (request, 'usuarios.html')
+
 #MOSTRAR LISTADO OC + FILTROS
 class listadoOC(TemplateView):
     template_name = 'oc/listado_oc.html'

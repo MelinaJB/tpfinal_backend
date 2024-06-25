@@ -8,4 +8,5 @@ urlpatterns = [
     path('nueva_oc/', nuevaOC.as_view(), name='nueva_oc'),
     path('listado_clientes/', listadoCliente.as_view(), name='listado_clientes'),
     path('nuevo_cliente/', nuevoCliente.as_view(), name='nuevo_cliente'),
+    path('panel/', panelUsuarios.as_view(), name='panelusuarios'),
 ]
