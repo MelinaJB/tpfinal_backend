@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
+from django.contrib.auth.decorators import login_required
 from .models import *
 from .forms import *
 
@@ -38,6 +39,7 @@ class listadoOC(TemplateView):
         })
 
 #CREAR NUEVA ORDEN DE COMPRA
+#@login_required(login_url="login")
 class nuevaOC(TemplateView):
     template_name = 'nueva_oc'
     
