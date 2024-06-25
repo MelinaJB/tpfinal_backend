@@ -1,0 +1,17 @@
+hola
+
+
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<h3>Nuevo Cliente</h3>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">GUARDAR</button>
+</form>
+{% endblock %}

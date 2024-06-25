@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+ <div>
+    <h2>Clientes</h2>
+    <a href="{% url 'oc:nuevo_cliente' %}">Crear nuevo cliente</a>
+ </div>
+
+
+    <table>
+        <tr>
+            <td>Cliente</td>
+            <td>CUIT</td>
+            <td>Domicilio</td>
+        </tr>
+        {% for cl in cliente %}
+        <tr>
+            <td>{{ cl.cliente }}</td>
+            <td>{{ cl.cuit }}</td>
+            <td>{{cl.domiciliocliente}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+
+    
+
+
+{% endblock %}

@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
 from .models import *
+from .forms import *
 
 
 # Create your views here.
@@ -13,7 +14,7 @@ class Index(TemplateView):
             'title': title
         })
 
-
+#MOSTRAR LISTADO OC + FILTROS
 class listadoOC(TemplateView):
     template_name = 'oc/listado_oc.html'
 
@@ -40,4 +41,50 @@ class listadoOC(TemplateView):
             'numero_seleccionado': numero
         })
 
+#CREAR NUEVA ORDEN DE COMPRA
+class nuevaOC(TemplateView):
+    template_name = 'nueva_oc'
+    
+    def get(self, request):
+        form = nuevaOCForm()
+        return render(request, 'nueva_oc.html', {
+            'form': form
+            })
+    
+    def post(self, request):
+        form = nuevaOCForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('oc:listado_oc')
+        return render(request, 'listado_oc.html', {
+            'form': form
+            })
+    
 
+#MOSTRAR LISTADO DE CLIENTES REGISTRADOS
+class listadoCliente(TemplateView):
+    template_name = 'oc/listado_cliente.html'
+
+    def get(self, request):
+        cliente = Cliente.objects.all()
+        return render(request, 'listado_clientes.html', {
+            'cliente': cliente
+        })
+
+
+#CREAR NUEVO CLIENTE
+class nuevoCliente(TemplateView):
+    template_name = 'nuevo_cliente.html'
+    
+    def get(self, request):
+        form = ClienteForm()
+        return render(request, 'nuevo_cliente.html', {
+            'form': form
+            })
+    
+    def post(self, request):
+        form = ClienteForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('oc:listado_clientes')  # Cambia 'listado_clientes' por la URL de tu lista de clientes
+        return render(request, self.template_name, {'form': form})
