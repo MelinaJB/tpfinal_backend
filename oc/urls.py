@@ -1,11 +1,12 @@
 from django.urls import path
+from django.contrib.auth.decorators import login_required
 from .views import *
 
 app_name = 'oc'  
 
 urlpatterns = [
-    path('listado_oc/', listadoOC.as_view(), name='listado_oc'),
-    path('nueva_oc/', nuevaOC.as_view(), name='nueva_oc'),
-    path('listado_clientes/', listadoCliente.as_view(), name='listado_clientes'),
-    path('nuevo_cliente/', nuevoCliente.as_view(), name='nuevo_cliente'),
+    path('listado_oc/', login_required(listadoOC.as_view()), name='listado_oc'),
+    path('nueva_oc/', login_required(nuevaOC.as_view()), name='nueva_oc'),
+    path('listado_clientes/', login_required(listadoCliente.as_view()), name='listado_clientes'),
+    path('nuevo_cliente/', login_required(nuevoCliente.as_view()), name='nuevo_cliente'),
 ]
