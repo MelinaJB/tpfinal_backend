@@ -15,31 +15,46 @@
         {% endfor %}
     </select>
 
-    <label for="numero">Número de Orden:</label>
-    <input type="text" name="numero" id="numero" value="{{ numero_seleccionado }}">
 
-    <button type="submit">Filtrar</button>
+    <label for="numero">Número de Orden:</label>
+    <input type="text" name="numero" id="numero" class="p-1 me-3" value="{{ numero_seleccionado }}">
+
+    <button class="btn btn-primary" type="submit">Filtrar</button>
 </form>
 
 
 
 {% if listado %}
-    <ul>
+ 
+ <table class="table table-striped">
+     <thead>
+       <tr>
+         <th scope="col">Nro OC</th>
+         <th scope="col">Cliente</th>
+         <th scope="col">Afiliado</th>
+         <th scope="col">Fecha de OC</th>
+         <th scope="col">Estado</th>
+         <th scope="col">Modificar</th>
+       </tr>
+     </thead>
+     <tbody>
         {% for oc in listado %}
+       <tr>
+         <td>{{ oc.numero }}</td>
+         <td>{{ oc.cliente }}</td>
+         <td>{{ oc.afiliado }}</td>
+         <td>{{ oc.fecha }}</td>
+         <td>{{ oc.estado }}</td>
+         <td><a class="btn btn-light" href="{% url 'oc:modificar_oc' oc.id %}">MODIFICAR</a></td>
 
-        <div>
-            <h3>{{ oc.numero }} - {{ oc.cliente }}</h3>
-            <p>{{ oc.fecha }}</p>
-            <p>{{ oc.estado }}</p>
-        </div>     
-       
-        {% endfor %}
-    </ul>
+         {% endfor %}
+       </tr>
+     </tbody>
+   </table>
+     
 {% else %}
     <p>No se encontraron resultados para los filtros aplicados.</p>
 {% endif %}
-
-
 
 
 {% endblock %}

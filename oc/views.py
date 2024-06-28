@@ -1,23 +1,21 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from .models import *
 from .forms import *
 
 
 # Create your views here.
-class panelUsuarios(TemplateView):
-    template_name = 'panelusuarios'
-    def get(self, request):
-        return render (request, 'usuarios.html')
 
 #MOSTRAR LISTADO OC + FILTROS
 class listadoOC(TemplateView):
     template_name = 'oc/listado_oc.html'
-
+    
+#    @method_decorator(@login_required())
     def get(self, request):
         estado = request.GET.get('estado', None)
-        numero = request.GET.get('numero', None)
+        numero = request.GET.get('numero', "")
         
         # Construir el queryset filtrado en base a los filtros aplicados
         queryset = OrdenCompra.objects.all()
@@ -58,6 +56,26 @@ class nuevaOC(TemplateView):
             'form': form
             })
     
+#MODIFICAR OC
+class modificarOC(TemplateView):
+    def get(self, request, id):
+        nroid = OrdenCompra.objects.get(pk = id)
+        form = nuevaOCForm(instance=nroid)
+        return render(request, 'modificar_oc.html',{
+            'nroid' : nroid,
+            'form': form
+        })
+    
+    def post(self, request, id):
+        oc = get_object_or_404(OrdenCompra, pk=id)
+        form = nuevaOCForm(request.POST, instance=oc)
+        if form.is_valid():
+            form.save()
+            return redirect('oc:listado_oc')
+        return render(request, 'modificar_oc.html', {
+            'nroid': oc,
+            'form': form
+        })
 
 #MOSTRAR LISTADO DE CLIENTES REGISTRADOS
 class listadoCliente(TemplateView):
@@ -84,5 +102,5 @@ class nuevoCliente(TemplateView):
         form = ClienteForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('oc:listado_clientes')  # Cambia 'listado_clientes' por la URL de tu lista de clientes
+            return redirect('oc:listado_clientes')
         return render(request, self.template_name, {'form': form})

@@ -4,11 +4,13 @@
 
 {% block content %}
 
-<h3>Nuevo Cliente</h3>
+<h2 class="pb-3">Nuevo Cliente</h2>
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">GUARDAR</button>
-</form>
+<div class="form-group">
+    <form method="post" >
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn-primary" type="submit">GUARDAR</button>
+    </form>
+</div>
 {% endblock %}

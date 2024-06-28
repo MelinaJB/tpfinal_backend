@@ -4,28 +4,28 @@
 
 {% block content %}
  <div>
-    <h2>Clientes</h2>
-    <a href="{% url 'oc:nuevo_cliente' %}">Crear nuevo cliente</a>
+    <h2 class="pb-3">Clientes</h2>
+    <a class="btn btn-primary stretched-link mb-3" href="{% url 'oc:nuevo_cliente' %}">Crear nuevo cliente</a>
  </div>
 
 
-    <table>
-        <tr>
-            <td>Cliente</td>
-            <td>CUIT</td>
-            <td>Domicilio</td>
-        </tr>
-        {% for cl in cliente %}
-        <tr>
+    <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Cliente</th>
+            <th scope="col">CUIT</th>
+            <th scope="col">Domicilio fiscal</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for cl in cliente %}
+          <tr>
             <td>{{ cl.cliente }}</td>
             <td>{{ cl.cuit }}</td>
             <td>{{cl.domiciliocliente}}</td>
-        </tr>
-        {% endfor %}
-    </table>
-
-
-    
-
+            {% endfor %}
+          </tr>
+        </tbody>
+      </table>
 
 {% endblock %}

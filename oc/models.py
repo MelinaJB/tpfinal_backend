@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 
 class Cliente(models.Model):
-    cliente = models.CharField(max_length=200,)
+    cliente = models.CharField(max_length=200, unique=True)
     cuit = models.CharField(max_length=13)
     domiciliocliente = models.CharField(max_length=200)
 
