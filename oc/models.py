@@ -35,22 +35,21 @@ class OrdenCompra(models.Model):
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='pendiente')
     entrega_unica = models.BooleanField(default=True)
 
-    # # Campos para almacenar los datos de la tabla de productos
-    # cantidad = models.IntegerField(null=True, blank=True)
-    # descripcion = models.CharField(max_length=255, null=True, blank=True)
-    # precio_unitario = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-
+    
     def __str__(self):
         return self.numero + ' - ' + self.estado  # Puedes cambiar esto según cómo quieras mostrar la orden de compra en el admin
 
 class Producto(models.Model):
-    orden_compra = models.ForeignKey(OrdenCompra, related_name='productos', on_delete=models.CASCADE)
-    cantidad = models.PositiveIntegerField()
-    detalle = models.CharField(max_length=200)
+    orden_compra = models.ForeignKey('OrdenCompra', on_delete=models.CASCADE, related_name='productos')
+    cantidad = models.IntegerField()
+    descripcion = models.CharField(max_length=255)
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
         return f'{self.detalle} - {self.orden_compra.numero}'
+    
+
+    
 
 #SUBIR PDF ////////////////
 class PDFDocument(models.Model):

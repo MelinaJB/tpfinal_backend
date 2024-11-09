@@ -2,10 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-
 from django.views import View
-from .forms import PDFUploadForm
-from .models import PDFDocument
+import pdfplumber
+import re
 import fitz  # PyMuPDF
 from .utils import extraer_datos
 from .models import *
@@ -42,26 +41,6 @@ class listadoOC(TemplateView):
             'numero_seleccionado': numero
         })
 
-#CREAR NUEVA ORDEN DE COMPRA
-# class nuevaOC(TemplateView):
-#     template_name = 'nueva_oc'
-    
-#     def get(self, request):
-#         pdf_form = PDFUploadForm()
-#         oc_form = nuevaOCForm()
-#         return render(request, 'nueva_oc.html', {
-#         'pdf_form': pdf_form,
-#         'oc_form': oc_form
-#             })
-    
-#     def post(self, request):
-#         form = nuevaOCForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('oc:listado_oc')
-#         return render(request, 'listado_oc.html', {
-#             'form': form
-#             })
     
 class nuevaOC(TemplateView):
     template_name = 'nueva_oc.html' 
@@ -87,7 +66,7 @@ class nuevaOC(TemplateView):
                 datos = extraer_datos(pdf_instance.file.path)
                 cliente = Cliente.objects.get(cliente=datos.get('uoc'))
 
-                print(datos)
+                # print(datos)
                 
                 # Configurar los valores extraídos como iniciales para el formulario de nueva orden de compra
                 oc_form = nuevaOCForm(initial={
@@ -98,21 +77,32 @@ class nuevaOC(TemplateView):
                     'domicilioafiliado': "Dirección no especificada en el PDF",
                     'cliente': cliente.id,
                     'estado': 'pendiente',
-                    'detalle': datos.get('detalle_orden'),
                     'importe_total': datos.get('importe_total')
                 })
 
-                # Guardar los datos de productos 
-                # for item in datos: 
-                #     OrdenCompra.objects.create(
-                #         cantidad=item['cantidad'], 
-                #         descripcion=item['descripcion'], 
-                #         precio_unitario=item['precio_unitario'], 
-                #     )
+                # ESTO LO ESTOY AGREGANDO AHORA
+                # Extraer datos de productos del detalle de la orden
+                cantidades = re.findall(r'^\s*(\d+)', datos.get('detalle_orden'), re.MULTILINE)
+                descripciones = re.findall(r'([A-Z\s]+)', datos.get('detalle_orden'))
+                precios_unitarios = re.findall(r'\d{1,3}(?:\.\d{3})*,\d{2}', datos.get('detalle_orden'))
+                # cantidades = re.findall(r'\b\d+\b', datos.get('detalle_orden'))
+                # descripciones = re.findall(r'[A-Z\s]+', datos.get('detalle_orden'))
+                # precios_unitarios = re.findall(r'\d{1,3}(?:\.\d{3})*,\d{2}', datos.get('detalle_orden'))
+
+                productos = []
+                for cantidad, descripcion, precio_unitario in zip(cantidades, descripciones, precios_unitarios):
+                    productos.append({
+                        'cantidad': cantidad,
+                        'descripcion': descripcion.strip(),
+                        'precio_unitario': precio_unitario
+                    })
+
+                    print(productos)
 
                 return render(request, self.template_name, {
                     'pdf_form': PDFUploadForm(),  # Volver a mostrar el formulario vacío
-                    'oc_form': oc_form
+                    'oc_form': oc_form,
+                    'productos': productos, #ESTO LO AGREGUE AHORA
                 })
             else:
                 return render(request, self.template_name, {
@@ -123,7 +113,16 @@ class nuevaOC(TemplateView):
         else:
             oc_form = nuevaOCForm(request.POST)
             if oc_form.is_valid():
-                oc_form.save()
+                # oc_form.save() abajo de esto lo agregue ahora
+                orden_compra = oc_form.save()
+                # Guardar los productos asociados a la orden de compra
+                for i in range(len(request.POST.getlist('productos[0][cantidad]'))):
+                    Producto.objects.create(
+                        orden_compra=orden_compra,
+                        cantidad=request.POST.getlist(f'productos[{i}][cantidad]')[0],
+                        descripcion=request.POST.getlist(f'productos[{i}][descripcion]')[0],
+                        precio_unitario=request.POST.getlist(f'productos[{i}][precio_unitario]')[0]
+                    )
                 return redirect('oc:listado_oc')  # Redirige a la página de listado
             else:
                 return render(request, self.template_name, {

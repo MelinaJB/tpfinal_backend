@@ -30,6 +30,21 @@ class nuevaOCForm(forms.ModelForm):
             'importe_total': 'Importe Total',
         }
 
+class ProductoForm(forms.ModelForm):
+    class Meta:
+        model = Producto
+        fields = ['cantidad', 'descripcion', 'precio_unitario']
+        widgets = {
+            'cantidad': forms.NumberInput(attrs={'class': 'form-control'}),
+            'descripcion': forms.TextInput(attrs={'class': 'form-control'}),
+            'precio_unitario': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
+        labels = {
+            'cantidad': 'Cantidad',
+            'descripcion': 'Descripción',
+            'precio_unitario': 'Precio Unitario',
+        }
+
 
 class ClienteForm(forms.ModelForm):
     class Meta:

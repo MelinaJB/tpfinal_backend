@@ -10,28 +10,6 @@
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     {{ pdf_form.as_p }}
-
-    <!-- {% if extraido %} 
-    <hr> 
-    <table class="table table-bordered"> 
-        <thead> 
-            <tr> 
-                <th>Cantidad</th> 
-                <th>Descripción</th> 
-                <th>Precio Unitario</th> 
-            </tr> 
-        </thead> 
-        <tbody> 
-            {% for item in extraido %} 
-            <tr> 
-                <td>{{ item.cantidad }}</td> 
-                <td>{{ item.descripcion }}</td> 
-                <td>{{ item.precio_unitario }}</td> 
-            </tr> {% endfor %} 
-        </tbody> 
-    </table> 
-    {% endif %} -->
-
     <button class="btn btn-primary" type="submit" name="upload_pdf">Cargar PDF</button>
 </form>
 
@@ -40,6 +18,32 @@
 <form method="POST">
     {% csrf_token %}
     {{ oc_form.as_p }}
+
+    <!-- Tabla para mostrar los productos extraídos -->
+    {% if productos %}
+    <h2>Productos Extraídos</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Cantidad</th>
+                <th>Descripción</th>
+                <th>Precio Unitario</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+                <tr>
+                    <td>{{ producto.cantidad }}</td>
+                    <td>{{ producto.descripcion }}</td>
+                    <td>{{ producto.precio_unitario }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+
+    
     <button class="btn btn-primary" type="submit">Guardar</button>
 </form>
 
