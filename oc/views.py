@@ -2,6 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+
+from django.views import View
+from .forms import PDFUploadForm
+from .models import PDFDocument
+import fitz  # PyMuPDF
+from .utils import extraer_datos
 from .models import *
 from .forms import *
 
@@ -104,3 +110,39 @@ class nuevoCliente(TemplateView):
             form.save()
             return redirect('oc:listado_clientes')
         return render(request, self.template_name, {'form': form})
+
+
+
+
+
+#CARGAR PDF///////////////////////////////////////////////////////////
+class PDFUploadView(View):
+    def get(self, request):
+        form = PDFUploadForm()
+        return render(request, 'subir_pdf.html', {'form': form})
+
+    def post(self, request):
+        form = PDFUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            pdf_instance = form.save()
+            datos = extraer_datos(pdf_instance.file.path)  # Extrae los datos del PDF
+            
+            # Imprimir los datos extraídos para verificar
+            print(datos)
+
+            cliente = Cliente.objects.get(cliente=datos.get('uoc'))
+            
+            # Configura los datos extraídos como valores iniciales en el formulario
+            oc_form = nuevaOCForm(initial={
+                'numero': datos.get('numero_orden') or '',
+                'fecha': datos.get('fecha_orden') or '',
+                'nrocompulsa': datos.get('numero_compulsa') or '',
+                'afiliado': datos.get('nombre_afiliado') or '',
+                'domicilioafiliado': "Dirección no especificada en el PDF", 
+                'cliente': cliente.id or '',  # Guardar como afiliado si no se selecciona cliente
+                'estado': 'pendiente',  # Puedes configurar un estado predeterminado
+                'detalle': datos.get('detalle_orden') or '',
+                'importe_total': datos.get('importe_total') or ''
+            })
+            return render(request, 'nueva_oc.html', {'form': oc_form})
+        return render(request, 'subir_pdf.html', {'form': form})

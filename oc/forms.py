@@ -10,7 +10,7 @@ class nuevaOCForm(forms.ModelForm):
         widgets = {
             'numero': forms.NumberInput(attrs={'class': 'form-control'}),
             'fecha': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'nrocompulsa': forms.NumberInput(attrs={'class': 'form-control'}),
+            'nrocompulsa': forms.TextInput(attrs={'class': 'form-control'}),
             'afiliado': forms.TextInput(attrs={'class': 'form-control'}),
             'domicilioafiliado': forms.TextInput(attrs={'class': 'form-control'}),
             'cliente': forms.Select(attrs={'class': 'form-select'}),
@@ -39,3 +39,8 @@ class ClienteForm(forms.ModelForm):
             'domiciliocliente': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
+#SUBIR PDF /////////////////
+class PDFUploadForm(forms.ModelForm):
+    class Meta:
+        model = PDFDocument
+        fields = ['file']
