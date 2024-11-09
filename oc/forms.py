@@ -14,6 +14,7 @@ class nuevaOCForm(forms.ModelForm):
             'afiliado': forms.TextInput(attrs={'class': 'form-control'}),
             'domicilioafiliado': forms.TextInput(attrs={'class': 'form-control'}),
             'cliente': forms.Select(attrs={'class': 'form-select'}),
+            'importe_total': forms.NumberInput(attrs={'class': 'form-control'}),
             'estado': forms.Select(attrs={'class': 'form-select'}),
             'entrega_unica': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
@@ -26,6 +27,7 @@ class nuevaOCForm(forms.ModelForm):
             'cliente': 'Cliente',
             'estado': 'Estado',
             'entrega_unica': 'Entrega Única',
+            'importe_total': 'Importe Total',
         }
 
 

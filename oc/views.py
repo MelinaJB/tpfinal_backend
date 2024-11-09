@@ -72,9 +72,11 @@ class nuevaOC(TemplateView):
         oc_form = nuevaOCForm()
         return render(request, self.template_name, {
             'pdf_form': pdf_form,
-            'oc_form': oc_form
+            'oc_form': oc_form,
+            'extraido': None,
         })
     
+  
     def post(self, request):
         # Si se está enviando el formulario de subida del PDF
         if 'upload_pdf' in request.POST:
@@ -84,6 +86,8 @@ class nuevaOC(TemplateView):
                 pdf_instance = pdf_form.save()
                 datos = extraer_datos(pdf_instance.file.path)
                 cliente = Cliente.objects.get(cliente=datos.get('uoc'))
+
+                print(datos)
                 
                 # Configurar los valores extraídos como iniciales para el formulario de nueva orden de compra
                 oc_form = nuevaOCForm(initial={
@@ -97,6 +101,15 @@ class nuevaOC(TemplateView):
                     'detalle': datos.get('detalle_orden'),
                     'importe_total': datos.get('importe_total')
                 })
+
+                # Guardar los datos de productos 
+                # for item in datos: 
+                #     OrdenCompra.objects.create(
+                #         cantidad=item['cantidad'], 
+                #         descripcion=item['descripcion'], 
+                #         precio_unitario=item['precio_unitario'], 
+                #     )
+
                 return render(request, self.template_name, {
                     'pdf_form': PDFUploadForm(),  # Volver a mostrar el formulario vacío
                     'oc_form': oc_form

@@ -20,7 +20,9 @@ def extraer_datos(pdf_path):
     numero_compulsa = buscar_patron(r'Número:\s*(\d+-\d+)', texto)
     nombre_afiliado = buscar_patron(r'AFILIADO:\s*(.*)', texto)
     detalle_orden = buscar_patron(r'DETALLE DE LA ORDEN DE COMPRA(.*)Importe Total:', texto, re.DOTALL)
-    importe_total = buscar_patron(r'Importe Total:\s*([\d,]+)', texto)
+    # importe_total = buscar_patron(r'Importe Total:\s*([\d,]+)', texto)
+    importe_total = buscar_patron(r'Importe Total:\s*ARS\s*([\d.,]+)', texto)
+
 
     return {
         'uoc': uoc,
