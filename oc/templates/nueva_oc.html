@@ -6,13 +6,19 @@
 
 <h3>Nueva OC</h3>
 
-
-<form method="post">
-
+<h2>Cargar PDF</h2>
+<form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    {{form.as_p}}
+    {{ pdf_form.as_p }}
+    <button class="btn btn-primary" type="submit" name="upload_pdf">Cargar PDF</button>
+</form>
 
-    <button class="btn btn-primary">GUARDAR</button>
+<hr>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ oc_form.as_p }}
+    <button class="btn btn-primary" type="submit">Guardar</button>
 </form>
 
 {% endblock %}

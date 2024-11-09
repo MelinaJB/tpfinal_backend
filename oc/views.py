@@ -18,7 +18,7 @@ from .forms import *
 class listadoOC(TemplateView):
     template_name = 'oc/listado_oc.html'
     
-#    @method_decorator(@login_required())
+
     def get(self, request):
         estado = request.GET.get('estado', None)
         numero = request.GET.get('numero', "")
@@ -43,24 +43,84 @@ class listadoOC(TemplateView):
         })
 
 #CREAR NUEVA ORDEN DE COMPRA
-#@login_required(login_url="login")
+# class nuevaOC(TemplateView):
+#     template_name = 'nueva_oc'
+    
+#     def get(self, request):
+#         pdf_form = PDFUploadForm()
+#         oc_form = nuevaOCForm()
+#         return render(request, 'nueva_oc.html', {
+#         'pdf_form': pdf_form,
+#         'oc_form': oc_form
+#             })
+    
+#     def post(self, request):
+#         form = nuevaOCForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('oc:listado_oc')
+#         return render(request, 'listado_oc.html', {
+#             'form': form
+#             })
+    
 class nuevaOC(TemplateView):
-    template_name = 'nueva_oc'
+    template_name = 'nueva_oc.html' 
     
     def get(self, request):
-        form = nuevaOCForm()
-        return render(request, 'nueva_oc.html', {
-            'form': form
-            })
+        # Formularios vacíos para subir el PDF y crear una nueva orden de compra
+        pdf_form = PDFUploadForm()
+        oc_form = nuevaOCForm()
+        return render(request, self.template_name, {
+            'pdf_form': pdf_form,
+            'oc_form': oc_form
+        })
     
     def post(self, request):
-        form = nuevaOCForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('oc:listado_oc')
-        return render(request, 'listado_oc.html', {
-            'form': form
-            })
+        # Si se está enviando el formulario de subida del PDF
+        if 'upload_pdf' in request.POST:
+            pdf_form = PDFUploadForm(request.POST, request.FILES)
+            if pdf_form.is_valid():
+                # Guardar el PDF y extraer datos
+                pdf_instance = pdf_form.save()
+                datos = extraer_datos(pdf_instance.file.path)
+                cliente = Cliente.objects.get(cliente=datos.get('uoc'))
+                
+                # Configurar los valores extraídos como iniciales para el formulario de nueva orden de compra
+                oc_form = nuevaOCForm(initial={
+                    'numero': datos.get('numero_orden'),
+                    'fecha': datos.get('fecha_orden'),
+                    'nrocompulsa': datos.get('numero_compulsa'),
+                    'afiliado': datos.get('nombre_afiliado'),
+                    'domicilioafiliado': "Dirección no especificada en el PDF",
+                    'cliente': cliente.id,
+                    'estado': 'pendiente',
+                    'detalle': datos.get('detalle_orden'),
+                    'importe_total': datos.get('importe_total')
+                })
+                return render(request, self.template_name, {
+                    'pdf_form': PDFUploadForm(),  # Volver a mostrar el formulario vacío
+                    'oc_form': oc_form
+                })
+            else:
+                return render(request, self.template_name, {
+                    'pdf_form': pdf_form,
+                    'oc_form': nuevaOCForm()
+                })
+        # Si se está enviando el formulario de la orden de compra
+        else:
+            oc_form = nuevaOCForm(request.POST)
+            if oc_form.is_valid():
+                oc_form.save()
+                return redirect('oc:listado_oc')  # Redirige a la página de listado
+            else:
+                return render(request, self.template_name, {
+                    'pdf_form': PDFUploadForm(),
+                    'oc_form': oc_form
+                })
+
+
+
+
     
 #MODIFICAR OC
 class modificarOC(TemplateView):
@@ -112,37 +172,34 @@ class nuevoCliente(TemplateView):
         return render(request, self.template_name, {'form': form})
 
 
-
-
-
 #CARGAR PDF///////////////////////////////////////////////////////////
-class PDFUploadView(View):
-    def get(self, request):
-        form = PDFUploadForm()
-        return render(request, 'subir_pdf.html', {'form': form})
+# class PDFUploadView(View):
+#     def get(self, request):
+#         form = PDFUploadForm()
+#         return render(request, 'subir_pdf.html', {'form': form})
 
-    def post(self, request):
-        form = PDFUploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            pdf_instance = form.save()
-            datos = extraer_datos(pdf_instance.file.path)  # Extrae los datos del PDF
+#     def post(self, request):
+#         form = PDFUploadForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             pdf_instance = form.save()
+#             datos = extraer_datos(pdf_instance.file.path)  # Extrae los datos del PDF
             
-            # Imprimir los datos extraídos para verificar
-            print(datos)
+#             # Imprimir los datos extraídos para verificar
+#             print(datos)
 
-            cliente = Cliente.objects.get(cliente=datos.get('uoc'))
+#             cliente = Cliente.objects.get(cliente=datos.get('uoc'))
             
-            # Configura los datos extraídos como valores iniciales en el formulario
-            oc_form = nuevaOCForm(initial={
-                'numero': datos.get('numero_orden') or '',
-                'fecha': datos.get('fecha_orden') or '',
-                'nrocompulsa': datos.get('numero_compulsa') or '',
-                'afiliado': datos.get('nombre_afiliado') or '',
-                'domicilioafiliado': "Dirección no especificada en el PDF", 
-                'cliente': cliente.id or '',  # Guardar como afiliado si no se selecciona cliente
-                'estado': 'pendiente',  # Puedes configurar un estado predeterminado
-                'detalle': datos.get('detalle_orden') or '',
-                'importe_total': datos.get('importe_total') or ''
-            })
-            return render(request, 'nueva_oc.html', {'form': oc_form})
-        return render(request, 'subir_pdf.html', {'form': form})
+#             # Configura los datos extraídos como valores iniciales en el formulario
+#             oc_form = nuevaOCForm(initial={
+#                 'numero': datos.get('numero_orden') or '',
+#                 'fecha': datos.get('fecha_orden') or '',
+#                 'nrocompulsa': datos.get('numero_compulsa') or '',
+#                 'afiliado': datos.get('nombre_afiliado') or '',
+#                 'domicilioafiliado': "Dirección no especificada en el PDF", 
+#                 'cliente': cliente.id or '',  # Guardar como afiliado si no se selecciona cliente
+#                 'estado': 'pendiente',  # Puedes configurar un estado predeterminado
+#                 'detalle': datos.get('detalle_orden') or '',
+#                 'importe_total': datos.get('importe_total') or ''
+#             })
+#             return render(request, 'nueva_oc.html', {'form': oc_form})
+#         return render(request, 'subir_pdf.html', {'form': form})

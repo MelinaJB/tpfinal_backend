@@ -10,5 +10,5 @@ urlpatterns = [
     path('modificar_oc/<int:id>/', login_required(modificarOC.as_view()), name='modificar_oc'),
     path('listado_clientes/', login_required(listadoCliente.as_view()), name='listado_clientes'),
     path('nuevo_cliente/', login_required(nuevoCliente.as_view()), name='nuevo_cliente'),
-    path('subir_pdf/', login_required(PDFUploadView.as_view()), name='subir_pdf'),
+
 ]
