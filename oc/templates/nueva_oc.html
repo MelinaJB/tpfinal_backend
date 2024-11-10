@@ -6,7 +6,7 @@
 
 <h3>Nueva OC</h3>
 
-<h2>Cargar PDF</h2>
+<h4>Cargar PDF</h4>
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     {{ pdf_form.as_p }}
@@ -21,7 +21,7 @@
 
     <!-- Tabla para mostrar los productos extraídos -->
     {% if productos %}
-    <h2>Productos Extraídos</h2>
+    <h4>Productos</h4>
     <table>
         <thead>
             <tr>
@@ -37,9 +37,11 @@
                     <td>{{ producto.descripcion }}</td>
                     <td>{{ producto.precio_unitario }}</td>
                 </tr>
-            {% endfor %}
+                {% endfor %}
         </tbody>
     </table>
+    {% else %}
+    <p>No se encontraron productos en el PDF.</p>
     {% endif %}
 
 

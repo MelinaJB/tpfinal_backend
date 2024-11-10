@@ -66,7 +66,7 @@ class nuevaOC(TemplateView):
                 datos = extraer_datos(pdf_instance.file.path)
                 cliente = Cliente.objects.get(cliente=datos.get('uoc'))
 
-                # print(datos)
+                print(datos)
                 
                 # Configurar los valores extraídos como iniciales para el formulario de nueva orden de compra
                 oc_form = nuevaOCForm(initial={
@@ -80,29 +80,15 @@ class nuevaOC(TemplateView):
                     'importe_total': datos.get('importe_total')
                 })
 
-                # ESTO LO ESTOY AGREGANDO AHORA
-                # Extraer datos de productos del detalle de la orden
-                cantidades = re.findall(r'^\s*(\d+)', datos.get('detalle_orden'), re.MULTILINE)
-                descripciones = re.findall(r'([A-Z\s]+)', datos.get('detalle_orden'))
-                precios_unitarios = re.findall(r'\d{1,3}(?:\.\d{3})*,\d{2}', datos.get('detalle_orden'))
-                # cantidades = re.findall(r'\b\d+\b', datos.get('detalle_orden'))
-                # descripciones = re.findall(r'[A-Z\s]+', datos.get('detalle_orden'))
-                # precios_unitarios = re.findall(r'\d{1,3}(?:\.\d{3})*,\d{2}', datos.get('detalle_orden'))
-
-                productos = []
-                for cantidad, descripcion, precio_unitario in zip(cantidades, descripciones, precios_unitarios):
-                    productos.append({
-                        'cantidad': cantidad,
-                        'descripcion': descripcion.strip(),
-                        'precio_unitario': precio_unitario
-                    })
-
-                    print(productos)
+                # Usar la lista de productos extraídos de utils.py
+                productos = datos.get('detalle_orden', [])
+                
+                print(productos)
 
                 return render(request, self.template_name, {
                     'pdf_form': PDFUploadForm(),  # Volver a mostrar el formulario vacío
                     'oc_form': oc_form,
-                    'productos': productos, #ESTO LO AGREGUE AHORA
+                    'productos': productos, # Lista de productos extraídos
                 })
             else:
                 return render(request, self.template_name, {
@@ -112,8 +98,7 @@ class nuevaOC(TemplateView):
         # Si se está enviando el formulario de la orden de compra
         else:
             oc_form = nuevaOCForm(request.POST)
-            if oc_form.is_valid():
-                # oc_form.save() abajo de esto lo agregue ahora
+            if oc_form.is_valid():                
                 orden_compra = oc_form.save()
                 # Guardar los productos asociados a la orden de compra
                 for i in range(len(request.POST.getlist('productos[0][cantidad]'))):
