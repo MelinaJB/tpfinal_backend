@@ -14,9 +14,26 @@
     <button class="btn btn-primary mt-3">ACTUALIZAR</button>
 </form>
 
-
-
+<!-- Tabla para mostrar los productos asociados a la orden de compra -->
+<h2>Productos Asociados</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Cantidad</th>
+            <th>Descripción</th>
+            <th>Precio Unitario</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for producto in nroid.productos.all %}
+            <tr>
+                <td>{{ producto.cantidad }}</td>
+                <td>{{ producto.descripcion }}</td>
+                <td>{{ producto.precio_unitario }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
    
-
 {% endblock %}

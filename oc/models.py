@@ -25,11 +25,6 @@ class OrdenCompra(models.Model):
     afiliado = models.CharField(max_length=200, blank=True, null=True)
     domicilioafiliado = models.CharField(max_length=300, blank=True, null=True)
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-
-    # # Campos para almacenar los datos de la tabla de productos
-    # cantidad = models.IntegerField(null=True, blank=True)
-    # descripcion = models.CharField(max_length=255, null=True, blank=True)
-    # precio_unitario = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     importe_total = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True)
 
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='pendiente')
@@ -40,15 +35,13 @@ class OrdenCompra(models.Model):
         return self.numero + ' - ' + self.estado  # Puedes cambiar esto según cómo quieras mostrar la orden de compra en el admin
 
 class Producto(models.Model):
-    orden_compra = models.ForeignKey('OrdenCompra', on_delete=models.CASCADE, related_name='productos')
+    orden_compra = models.ForeignKey(OrdenCompra, on_delete=models.CASCADE, related_name='productos')
     cantidad = models.IntegerField()
-    descripcion = models.CharField(max_length=255)
+    descripcion = models.CharField(max_length=255, default="")
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return f'{self.detalle} - {self.orden_compra.numero}'
-    
-
+        return f'{self.descripcion} - {self.orden_compra.numero}'
     
 
 #SUBIR PDF ////////////////

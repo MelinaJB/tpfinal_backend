@@ -41,12 +41,11 @@ class listadoOC(TemplateView):
             'numero_seleccionado': numero
         })
 
-    
+
 class nuevaOC(TemplateView):
     template_name = 'nueva_oc.html' 
     
     def get(self, request):
-        # Formularios vacíos para subir el PDF y crear una nueva orden de compra
         pdf_form = PDFUploadForm()
         oc_form = nuevaOCForm()
         return render(request, self.template_name, {
@@ -54,21 +53,17 @@ class nuevaOC(TemplateView):
             'oc_form': oc_form,
             'extraido': None,
         })
-    
-  
+
     def post(self, request):
-        # Si se está enviando el formulario de subida del PDF
         if 'upload_pdf' in request.POST:
             pdf_form = PDFUploadForm(request.POST, request.FILES)
             if pdf_form.is_valid():
-                # Guardar el PDF y extraer datos
                 pdf_instance = pdf_form.save()
                 datos = extraer_datos(pdf_instance.file.path)
                 cliente = Cliente.objects.get(cliente=datos.get('uoc'))
 
-                print(datos)
+                print("Datos extraídos:", datos)
                 
-                # Configurar los valores extraídos como iniciales para el formulario de nueva orden de compra
                 oc_form = nuevaOCForm(initial={
                     'numero': datos.get('numero_orden'),
                     'fecha': datos.get('fecha_orden'),
@@ -80,45 +75,58 @@ class nuevaOC(TemplateView):
                     'importe_total': datos.get('importe_total')
                 })
 
-                # Usar la lista de productos extraídos de utils.py
                 productos = datos.get('detalle_orden', [])
                 
-                print(productos)
+                print("Productos extraídos:", productos)
 
                 return render(request, self.template_name, {
-                    'pdf_form': PDFUploadForm(),  # Volver a mostrar el formulario vacío
+                    'pdf_form': PDFUploadForm(),
                     'oc_form': oc_form,
-                    'productos': productos, # Lista de productos extraídos
+                    'productos': productos,
                 })
             else:
                 return render(request, self.template_name, {
                     'pdf_form': pdf_form,
                     'oc_form': nuevaOCForm()
                 })
-        # Si se está enviando el formulario de la orden de compra
+
         else:
             oc_form = nuevaOCForm(request.POST)
-            if oc_form.is_valid():                
+            if oc_form.is_valid():
                 orden_compra = oc_form.save()
-                # Guardar los productos asociados a la orden de compra
-                for i in range(len(request.POST.getlist('productos[0][cantidad]'))):
+                print("Orden de compra guardada:", orden_compra)
+
+                productos_data = request.POST.getlist('productos')
+
+                cantidad_list = request.POST.getlist('cantidad')
+                descripcion_list = request.POST.getlist('descripcion')
+                precio_unitario_list = request.POST.getlist('precio_unitario')
+
+                
+                # Iterar sobre cada producto extraído y guardarlo en la base de datos
+                for i in range(len(cantidad_list)):
                     Producto.objects.create(
                         orden_compra=orden_compra,
-                        cantidad=request.POST.getlist(f'productos[{i}][cantidad]')[0],
-                        descripcion=request.POST.getlist(f'productos[{i}][descripcion]')[0],
-                        precio_unitario=request.POST.getlist(f'productos[{i}][precio_unitario]')[0]
-                    )
-                return redirect('oc:listado_oc')  # Redirige a la página de listado
+                        cantidad=cantidad_list[i],
+                        descripcion=descripcion_list[i],
+                        precio_unitario=precio_unitario_list[i]
+                        )
+                    print("Producto guardado:", {
+                        'cantidad': cantidad_list[i],
+                        'descripcion': descripcion_list[i],
+                        'precio_unitario': precio_unitario_list[i]
+                        })
+                
+                return redirect('oc:listado_oc')
             else:
-                return render(request, self.template_name, {
-                    'pdf_form': PDFUploadForm(),
-                    'oc_form': oc_form
-                })
+                print("Formulario de OC no válido:", oc_form.errors)
+        
+        return render(request, self.template_name, {
+            'pdf_form': PDFUploadForm(),
+            'oc_form': oc_form
+        })    
 
 
-
-
-    
 #MODIFICAR OC
 class modificarOC(TemplateView):
     def get(self, request, id):
@@ -168,35 +176,3 @@ class nuevoCliente(TemplateView):
             return redirect('oc:listado_clientes')
         return render(request, self.template_name, {'form': form})
 
-
-#CARGAR PDF///////////////////////////////////////////////////////////
-# class PDFUploadView(View):
-#     def get(self, request):
-#         form = PDFUploadForm()
-#         return render(request, 'subir_pdf.html', {'form': form})
-
-#     def post(self, request):
-#         form = PDFUploadForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             pdf_instance = form.save()
-#             datos = extraer_datos(pdf_instance.file.path)  # Extrae los datos del PDF
-            
-#             # Imprimir los datos extraídos para verificar
-#             print(datos)
-
-#             cliente = Cliente.objects.get(cliente=datos.get('uoc'))
-            
-#             # Configura los datos extraídos como valores iniciales en el formulario
-#             oc_form = nuevaOCForm(initial={
-#                 'numero': datos.get('numero_orden') or '',
-#                 'fecha': datos.get('fecha_orden') or '',
-#                 'nrocompulsa': datos.get('numero_compulsa') or '',
-#                 'afiliado': datos.get('nombre_afiliado') or '',
-#                 'domicilioafiliado': "Dirección no especificada en el PDF", 
-#                 'cliente': cliente.id or '',  # Guardar como afiliado si no se selecciona cliente
-#                 'estado': 'pendiente',  # Puedes configurar un estado predeterminado
-#                 'detalle': datos.get('detalle_orden') or '',
-#                 'importe_total': datos.get('importe_total') or ''
-#             })
-#             return render(request, 'nueva_oc.html', {'form': oc_form})
-#         return render(request, 'subir_pdf.html', {'form': form})

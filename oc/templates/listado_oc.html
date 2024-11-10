@@ -33,6 +33,7 @@
          <th scope="col">Cliente</th>
          <th scope="col">Afiliado</th>
          <th scope="col">Fecha de OC</th>
+         <th scope="col">Importe</th>
          <th scope="col">Estado</th>
          <th scope="col">Modificar</th>
        </tr>
@@ -44,6 +45,7 @@
          <td>{{ oc.cliente }}</td>
          <td>{{ oc.afiliado }}</td>
          <td>{{ oc.fecha }}</td>
+         <td>{{ oc.importe_total}}</td>
          <td>{{ oc.estado }}</td>
          <td><a class="btn btn-light" href="{% url 'oc:modificar_oc' oc.id %}">MODIFICAR</a></td>
 

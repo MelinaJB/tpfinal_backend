@@ -22,7 +22,7 @@
     <!-- Tabla para mostrar los productos extraídos -->
     {% if productos %}
     <h4>Productos</h4>
-    <table>
+    <table class="table">
         <thead>
             <tr>
                 <th>Cantidad</th>
@@ -37,16 +37,21 @@
                     <td>{{ producto.descripcion }}</td>
                     <td>{{ producto.precio_unitario }}</td>
                 </tr>
-                {% endfor %}
+                <!-- Campos ocultos para enviar los datos del producto -->
+                <input type="hidden" name="cantidad" value="{{ producto.cantidad }}">
+                <input type="hidden" name="descripcion" value="{{ producto.descripcion }}">
+                <input type="hidden" name="precio_unitario" value="{{ producto.precio_unitario }}">
+            {% endfor %}
         </tbody>
     </table>
     {% else %}
     <p>No se encontraron productos en el PDF.</p>
     {% endif %}
 
-
-    
     <button class="btn btn-primary" type="submit">Guardar</button>
 </form>
 
 {% endblock %}
+
+
+
