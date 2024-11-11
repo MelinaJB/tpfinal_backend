@@ -1,8 +1,9 @@
 databases:
-  - name: tpfinal_backend
+  - name: mysitedb
     plan: free
-    databaseName: tpfinal_backend
-    user: tpfinal_backend_user
+    databaseName: tpfinal_backend  # Cambié el nombre de la base de datos a tpfinal_backend, que es el que mencionaste
+    user: tpfinal_backend_user     # Usuario de la base de datos
+    password: 6qiJ5Q3nN2muCpXwKLIA8iKMEtAKw8Qc  # Contraseña de la base de datos
 
 services:
   - type: web
@@ -13,9 +14,7 @@ services:
     startCommand: "python -m gunicorn mysite.asgi:application -k uvicorn.workers.UvicornWorker"
     envVars:
       - key: DATABASE_URL
-        fromDatabase:
-          name: tpfinal_backend
-          property: connectionString
+        value: "postgresql://tpfinal_backend_user:6qiJ5Q3nN2muCpXwKLIA8iKMEtAKw8Qc@dpg-csp5kgpu0jms73dr8oi0-a/tpfinal_backend"
       - key: SECRET_KEY
         generateValue: true
       - key: WEB_CONCURRENCY
