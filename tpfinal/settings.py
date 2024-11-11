@@ -86,14 +86,11 @@ WSGI_APPLICATION = 'tpfinal.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'tpfinal_backend',
-        'USER': 'tpfinal_backend_user',
-        'PASSWORD': '6qiJ5Q3nN2muCpXwKLIA8iKMEtAKw8Qc',
-        'HOST': 'dpg-csp5kgpu0jms73dr8oi0-a',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(
+        # Replace this value with your local database's connection string.
+        default='postgresql://postgres:postgres@localhost:5432/tpfinal_backend',
+        conn_max_age=600
+    )
 }
 
 
