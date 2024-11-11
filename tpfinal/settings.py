@@ -87,10 +87,10 @@ WSGI_APPLICATION = 'tpfinal.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        # Replace this value with your local database's connection string.
-        default='postgresql://postgres:postgres@localhost:5432/tpfinal_backend',
+        default=os.getenv('DATABASE_URL'),  # Usando la variable de entorno para obtener la URL de la base de datos
         conn_max_age=600
     )
+    
 }
 
 
