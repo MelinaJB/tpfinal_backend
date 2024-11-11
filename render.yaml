@@ -1,0 +1,22 @@
+databases:
+  - name: tpfinal_backend
+    plan: free
+    databaseName: tpfinal_backend
+    user: tpfinal_backend_user
+
+services:
+  - type: web
+    plan: free
+    name: mysite
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "python -m gunicorn mysite.asgi:application -k uvicorn.workers.UvicornWorker"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: tpfinal_backend
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
